@@ -1,5 +1,17 @@
 const API_URL = 'https://course-vue.javascript.ru/api';
 
+function fetchMeetupById(meetupId) {
+  return fetch(`${API_URL}/meetups/${meetupId}`).then((response) => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      return response.json().then((error) => {
+        throw error;
+      });
+    }
+  });
+}
+
 import { createApp, defineComponent } from './vendor/vue.esm-browser.js';
 
 const Root = defineComponent({
@@ -16,24 +28,10 @@ const Root = defineComponent({
     meetupType: {
       immediate: true,
       async handler(newVal, oldVal) {
-        this.meetupTitle = (await this.fetchMeetupById(newVal)).title;
+        this.meetupTitle = (await fetchMeetupById(newVal)).title;
       },
     },
   },
-
-  methods: {
-    fetchMeetupById(meetupId) {
-      return fetch(`${API_URL}/meetups/${meetupId}`).then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          return response.json().then((error) => {
-            throw error;
-          });
-        }
-      });
-    }
-  }
 });
 
 window.vm = createApp(Root).mount('#app');
