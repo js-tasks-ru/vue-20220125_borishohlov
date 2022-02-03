@@ -3,10 +3,17 @@ import { defineComponent } from './vendor/vue.esm-browser.js';
 export default defineComponent({
   name: 'CounterButton',
 
-  // Компонент должен иметь входной параметр
+  props: {
+    count: Number,
+  },
 
-  // Шаблон лучше держать максимально простым, а логику выносить в методы
+  emits: ['update:count'],
 
-  // Шаблон потребуется отредактировать
-  template: `<button type="button">1</button>`,
+  methods: {
+    increaseCount() {
+      this.$emit('update:count', this.count + 1);
+    },
+  },
+
+  template: `<button type="button" @click="increaseCount">{{ count }}</button>`,
 });
