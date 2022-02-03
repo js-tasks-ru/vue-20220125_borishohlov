@@ -13,12 +13,6 @@ export default defineComponent({
     agendaItem: Object,
   },
 
-  methods: {
-    getIcon(icon) {
-      return this.$options.agendaIcons[icon];
-    }
-  },
-
   template: `
     <div class="agenda-item">
       <div class="agenda-item__col">
