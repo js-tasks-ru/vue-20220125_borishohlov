@@ -9,8 +9,11 @@ import meetups from './api/meetups.js';
 export async function fetchMeetupById(meetupId) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const meetup = meetups.find((meetup) => meetup.id === meetupId);
+      const meetup = meetups.find((meetup) => {
+        return  meetup.id === meetupId
+      });
       if (!meetup) {
+
         reject(new Error('Not found'));
       }
       resolve(meetup);
