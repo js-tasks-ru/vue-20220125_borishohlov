@@ -9,7 +9,7 @@ export default defineComponent({
   },
 
   template: `
-    <div class="meetup-cover" :style="this.image ? '--bg-url: url(' + this.image + ')' : ''">
+    <div class="meetup-cover" :style="image ? '--bg-url: url(' + image + ')' : ''">
         <h1 class="meetup-cover__title">{{ title }}</h1>
     </div>`,
 });

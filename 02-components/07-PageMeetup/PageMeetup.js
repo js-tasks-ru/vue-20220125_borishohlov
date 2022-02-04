@@ -16,7 +16,8 @@ export default defineComponent({
   data() {
     return {
       meetup: undefined,
-      load: true
+      load: true,
+      errorMsg: ''
     }
   },
 
@@ -34,6 +35,7 @@ export default defineComponent({
             return result
           },
           error => {
+            this.errorMsg = error.message;
             return false
           }
         );
@@ -51,7 +53,7 @@ export default defineComponent({
       </ui-container>
 
       <ui-container v-else>
-        <ui-alert>Test Error</ui-alert>
+        <ui-alert>{{ errorMsg }}</ui-alert>
       </ui-container>
     </div>`,
 });

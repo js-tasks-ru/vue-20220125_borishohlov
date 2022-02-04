@@ -6,12 +6,19 @@ export default defineComponent({
   props: {
     organizer: String,
     place: String,
-    date: Number,
+    date: {
+      type: Number,
+      default: null
+    },
   },
 
-  methods: {
-    formatAsLocalDate(timestamp) {
-      return new Date(timestamp).toLocaleString(navigator.language, {
+  computed: {
+    dataDate: function () {
+      return new Date(this.date).toISOString().substr(0, 10)
+    },
+
+    formatAsLocalDate: function () {
+      return new Date(this.date).toLocaleString(navigator.language, {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -31,7 +38,7 @@ export default defineComponent({
       </li>
       <li>
         <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-        <time :datetime="new Date(date).toISOString().substr(0, 10)">{{ formatAsLocalDate(date) }}</time>
+        <time :datetime="dataDate">{{ formatAsLocalDate }}</time>
       </li>
     </ul>`,
 });
