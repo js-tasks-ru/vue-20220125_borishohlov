@@ -15,7 +15,7 @@ export default {
 
   computed: {
     bgImage: function () {
-      return this.image ?'url('+ this.image ?? + ')' : 'var(--default-cover)';
+      return this.image ?'url('+ this.image ?? + ')' : 'linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), var(--default-cover)';
     }
   }
 };
