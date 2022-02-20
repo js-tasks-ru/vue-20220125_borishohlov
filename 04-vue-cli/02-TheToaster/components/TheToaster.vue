@@ -1,24 +1,53 @@
 <template>
-  <div class="toasts">
-    <div class="toast toast_success">
-      <ui-icon class="toast__icon" icon="check-circle" />
-      <span>Success Toast Example</span>
-    </div>
-
-    <div class="toast toast_error">
-      <ui-icon class="toast__icon" icon="alert-circle" />
-      <span>Error Toast Example</span>
+  <div class="toasts" >
+    <div
+      v-for="item in items"
+      class="toast"
+      :class="types[item.name].cssClass"
+    >
+      <ui-icon class="toast__icon" :icon="types[item.name].iconName" />
+      <span>{{ item.message }}</span>
     </div>
   </div>
 </template>
 
 <script>
 import UiIcon from './UiIcon';
+import { ToastTypes } from './UiToast';
+
+function addToastItem(name, message) {
+  const newItem = { name, message };
+  newItem.timeoutId = setTimeout(() => this.items.splice(this.items.indexOf(newItem), 1), 5000);
+  newItem.key = newItem.timeoutId;
+  this.items.push(newItem);
+}
 
 export default {
   name: 'TheToaster',
 
+  data() {
+    return {
+      items: new Array(),
+      types: ToastTypes
+    };
+  },
+
   components: { UiIcon },
+
+
+  beforeUnmount() {
+    this.items?.foreach((item) => clearTimeout(item.timeoutId));
+  },
+
+  methods: {
+    success(message) {
+      addToastItem.call(this, 'success', message);
+    },
+
+    error(message) {
+      addToastItem.call(this, 'error', message);
+    },
+  },
 };
 </script>
 
