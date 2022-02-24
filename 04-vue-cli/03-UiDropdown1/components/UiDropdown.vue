@@ -1,18 +1,32 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <ui-icon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="{
+    'dropdown_opened' : dropdownOpened
+  }">
+    <button
+      type="button"
+      class="dropdown__toggle "
+      :class="{
+        dropdown__toggle_icon : hasIcon
+      }"
+      @click="toggleDropdown"
+    >
+      <ui-icon :icon="curOpt.icon" class="dropdown__icon" />
+      <span>{{ curOpt.text}}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <ui-icon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <ui-icon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div class="dropdown__menu" role="listbox" v-show="dropdownOpened">
+      <button
+        v-for="option in options"
+        class="dropdown__item"
+        :class="{
+        dropdown__item_icon : hasIcon
+      }"
+        role="option"
+        type="button"
+        @click="changeValue(option)"
+      >
+        <ui-icon :icon="option.icon" class="dropdown__icon" />
+        {{ option.text }}
       </button>
     </div>
   </div>
@@ -24,7 +38,60 @@ import UiIcon from './UiIcon';
 export default {
   name: 'UiDropdown',
 
+  data: function () {
+    return {
+      dropdownOpened: false,
+      computedTitle: undefined,
+      computedIcon: undefined
+    }
+  },
+
   components: { UiIcon },
+
+  props: {
+    options: {
+      type: Array,
+      require: true,
+      validator: (value) => {
+        return value.every(elem => typeof elem == 'object')
+      }
+    },
+    title: {
+      type: String,
+      require: true
+    },
+    modelValue: String,
+  },
+
+  computed: {
+    hasIcon() {
+      return this.options.some(elem => elem.hasOwnProperty('icon'));
+    },
+    curOpt() {
+      //const seacrStr = modelValue
+      //console.log(this.options, this.options.find(option => option.value === 'opening'),this.modelValue)
+      return this.options.find(option => option.value === this.modelValue) ?? {
+        text : this.title,
+        icon : ''
+      }
+    }
+  },
+
+  emits: ['update:modelValue'],
+
+  methods: {
+    toggleDropdown: function () {
+      this.dropdownOpened = !this.dropdownOpened;
+    },
+
+    changeValue: function (event) {
+      this.$emit('update:modelValue', event.value);
+      this.toggleDropdown();
+
+      this.computedText = event.text;
+      this.computedIcon = event.icon;
+    },
+  }
 };
 </script>
 
