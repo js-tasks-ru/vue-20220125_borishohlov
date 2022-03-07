@@ -1,8 +1,10 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" v-bind="$attrs"/>
+    <label :class="{
+      'image-uploader__preview-loading': status == 'uploading'
+    }" class="image-uploader__preview" >
+      <span class="image-uploader__text">{{ textStatus }}</span>
+      <input ref="file" type="file" accept="image/*" class="image-uploader__input" v-bind="$attrs" @click="handleClick" @change="handleInput"/>
     </label>
   </div>
 </template>
@@ -13,7 +15,10 @@ export default {
 
   data: function() {
     return {
-      status: 'empty'
+      status: this.preview ? 'image' : 'empty',
+      file: null,
+      inputDisabled: false,
+      image: this.preview,
     }
   },
 
@@ -22,17 +27,69 @@ export default {
     uploader: Function
   },
 
-  emits: [],
+  emits: ['select', 'upload', 'error', 'remove'],
 
   computed: {
-    status: function (){
+    textStatus: function (){
+      if (this.status == 'empty') {
+        return 'Загрузить изображение'
+      } else if (this.status == 'uploading') {
+        return 'Загрузка...'
+      } else {
+        return 'Удалить изображение'
+      }
+    },
 
+    bgImage: function () {
+      return this.preview ? 'url('+ this.preview + ')' : 'var(--default-cover)';
     }
-  }
+  },
+
+  methods: {
+    handleInput: function (event) {
+      let file = this.$refs.file.files[0];
+      this.$emit('select', file);
+      if (!!this.uploader) {
+        this.status = 'uploading';
+        if (file) {
+          this.uploader(this.$refs.file.files[0]).then((res) => {
+            console.log(res)
+            this.status = 'image';
+            this.$emit('upload', res);
+          })
+            .catch((error) => {
+              console.log('error')
+              this.status = 'empty';
+              this.$emit('error', error);
+              this.$refs.file.value = ''
+            })
+        } else {
+          this.$emit('error', 'Изображение не было выбрано');
+          this.status = 'empty';
+          this.$refs.file.value = ''
+        }
+      } else {
+        this.status = 'image';
+      }
+    },
+    handleClick: function (e) {
+      if (this.status == 'image') {
+        e.preventDefault();
+        this.$emit('remove');
+        this.status = 'empty';
+        this.$refs.file.value = ''
+      }
+    }
+  },
+
 };
 </script>
 
 <style scoped>
+root {
+
+}
+
 .image-uploader {
 }
 
@@ -42,10 +99,9 @@ export default {
 }
 
 .image-uploader__preview {
-  --bg-url: var(--default-cover);
   background-size: cover;
   background-position: center;
-  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), var(--bg-url);
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), v-bind(bgImage);
   border: 2px solid var(--blue-light);
   border-radius: 8px;
   transition: 0.2s border-color;
