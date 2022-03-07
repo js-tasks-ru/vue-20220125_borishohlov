@@ -2,7 +2,7 @@
   <div class="image-uploader">
     <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
       <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+      <input type="file" accept="image/*" class="image-uploader__input" v-bind="$attrs"/>
     </label>
   </div>
 </template>
@@ -10,6 +10,25 @@
 <script>
 export default {
   name: 'UiImageUploader',
+
+  data: function() {
+    return {
+      status: 'empty'
+    }
+  },
+
+  props: {
+    preview: String,
+    uploader: Function
+  },
+
+  emits: [],
+
+  computed: {
+    status: function (){
+
+    }
+  }
 };
 </script>
 
